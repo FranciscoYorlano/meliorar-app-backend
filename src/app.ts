@@ -1,10 +1,11 @@
 import express, { Request, Response, Application, NextFunction } from "express";
 import AppDataSource from "./config/dataSource";
 import { config } from "./config/appConfig"; // Importa la configuración para el puerto
+import { HttpException } from "./utils/HttpException";
 
 // Routers
 import authRouter from "./routes/auth.routes";
-import { HttpException } from "./utils/HttpException";
+import userRouter from "./routes/user.routes";
 
 const app: Application = express();
 const PORT: number = config.serverPort; // Usa el puerto desde la config
@@ -13,6 +14,7 @@ app.use(express.json());
 
 // Routers
 app.use("/api/auth", authRouter);
+app.use("/api/users", userRouter);
 
 app.get("/api", (req: Request, res: Response) => {
   res.send("¡API de Meliorar funcionando!");
@@ -43,9 +45,10 @@ AppDataSource.initialize()
     console.log("¡Conexión a la base de datos establecida exitosamente!");
     app.listen(PORT, () => {
       console.log(`Servidor corriendo en http://localhost:${PORT}`);
+      console.log(config.jwt);
     });
   })
   .catch((error) => {
     console.error("Error al conectar con la base de datos:", error);
-    process.exit(1); // Salir si la BD no conecta
+    process.exit(1);
   });

@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-dotenv.config(); // Carga las variables de entorno aquí, una sola vez.
+dotenv.config();
 
 export const config = {
   serverPort: process.env.PORT ? parseInt(process.env.PORT) : 3001,
@@ -11,10 +11,15 @@ export const config = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     synchronize: process.env.NODE_ENV === "development", // true en desarrollo, false en prod
-    logging: process.env.NODE_ENV === "development", // true en desarrollo, false en prod
+    logging: false, //process.env.NODE_ENV === "development", // true en desarrollo, false en prod
     entities: [__dirname + "/../**/*.entity{.ts,.js}"], // Ajusta esta ruta cuando tengas entidades
     migrations: [__dirname + "/../migrations/*{.ts,.js}"],
     subscribers: [],
   },
-  // Puedes añadir más configuraciones aquí (JWT_SECRET, etc.)
+  jwt: {
+    secret: process.env.JWT_SECRET || "fallback_secret_if_not_in_env",
+    expiresIn: process.env.JWT_EXPIRES_IN
+      ? parseInt(process.env.JWT_EXPIRES_IN)
+      : "1h",
+  },
 };

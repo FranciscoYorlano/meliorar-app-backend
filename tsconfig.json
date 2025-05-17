@@ -10,7 +10,8 @@
     "forceConsistentCasingInFileNames": true, // Asegura que las mayúsculas/minúsculas sean consistentes en los nombres de archivo
     // "resolveJsonModule": true, // Si planeas importar archivos .json directamente en tu código TS
     "experimentalDecorators": true, // <--- ASEGÚRATE DE QUE ESTÉ EN TRUE Y DESCOMENTADO
-    "emitDecoratorMetadata": true
-  }
-  // "include": ["src/**/*"] // Asegúrate de que solo compile lo que está en src
+    "emitDecoratorMetadata": true,
+    "typeRoots": ["./node_modules/@types", "src/typings"]
+  },
+  "include": ["src/**/*"]
 }

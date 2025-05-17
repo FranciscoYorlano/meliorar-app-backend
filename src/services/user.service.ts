@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import AppDataSource from "../config/dataSource"; // Nuestra fuente de datos
 import { User } from "../entities/user.entity";
 import { CreateUserDto } from "../dtos/create-user.dto";
+import { LoginUserDto } from "../dtos/login-user.dto";
 import { HttpException } from "../utils/HttpException";
 
 export class UserService {
@@ -49,5 +50,37 @@ export class UserService {
     return userWithoutPassword as User;
   }
 
-  // Aquí irán otros métodos (getUserById, getUserByEmail, etc.) más adelante
+  async loginUser(
+    loginData: LoginUserDto
+  ): Promise<Omit<User, "password_hash">> {
+    const { email, password } = loginData;
+
+    // 1. Buscar al usuario por email
+    const user = await this.userRepository.findOneBy({ email });
+    if (!user) {
+      // Mensaje genérico para no revelar si el email existe o no (mejora de seguridad)
+      throw new HttpException(401, "Credenciales inválidas.");
+    }
+
+    // 2. Comparar la contraseña proporcionada con la hasheada almacenada
+    const isPasswordMatching = await bcrypt.compare(
+      password,
+      user.password_hash
+    );
+    if (!isPasswordMatching) {
+      throw new HttpException(401, "Credenciales inválidas.");
+    }
+
+    // 3. Si las credenciales son correctas, preparamos los datos del usuario para devolver
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password_hash, ...userWithoutPassword } = user;
+
+    // 4. Generar el token JWT (lo haremos en el controlador por ahora, o podríamos moverlo a un AuthService)
+    // Por ahora, el servicio solo valida y devuelve el usuario.
+    // El token se generará en el AuthController después de llamar a este método.
+    // Por lo tanto, modificaremos la promesa de retorno temporalmente.
+
+    // Devolvemos el usuario sin el hash para que el controlador genere el token.
+    return userWithoutPassword as Omit<User, "password_hash">; // <--- Modificación temporal
+  }
 }

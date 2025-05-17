@@ -4,7 +4,11 @@ import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import { UserService } from "../services/user.service";
 import { CreateUserDto } from "../dtos/create-user.dto";
+import { LoginUserDto } from "../dtos/login-user.dto";
+import { config } from "../config/appConfig";
 import { HttpException } from "../utils/HttpException";
+import * as jwt from "jsonwebtoken";
+import { SignOptions } from "jsonwebtoken";
 
 export class AuthController {
   private userService: UserService;
@@ -13,8 +17,6 @@ export class AuthController {
     this.userService = new UserService();
   }
 
-  // Hacemos el método de instancia una propiedad de función de flecha para mantener el 'this' correcto
-  // o usamos .bind(this) al pasar el método al router. La función de flecha es más limpia aquí.
   public register = async (
     req: Request,
     res: Response,
@@ -55,6 +57,46 @@ export class AuthController {
     }
   };
 
-  // Aquí irá el método login más adelante
-  // public login = async (req: Request, res: Response, next: NextFunction): Promise<void> => { ... }
+  public login = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const requestBody = req.body || {};
+      const loginUserDto = plainToInstance(LoginUserDto, requestBody);
+      const errors = await validate(loginUserDto);
+
+      if (errors.length > 0) {
+        const message = errors
+          .map((error) => Object.values(error.constraints || {}))
+          .join(", ");
+        next(
+          new HttpException(400, message || "Error de validación en la entrada")
+        );
+        return;
+      }
+
+      // Llamar al servicio para validar las credenciales y obtener el usuario
+      const user = await this.userService.loginUser(loginUserDto);
+
+      const tokenPayload = {
+        userId: user.id,
+        email: user.email,
+      };
+
+      const token = jwt.sign(tokenPayload, config.jwt.secret, {
+        expiresIn: "1d",
+      });
+
+      res.status(200).json({
+        message: "Inicio de sesión exitoso",
+        user,
+        token,
+      });
+    } catch (error) {
+      console.error("Error en AuthController login:", error);
+      next(error);
+    }
+  };
 }
