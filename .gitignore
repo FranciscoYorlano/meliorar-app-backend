@@ -1,0 +1,24 @@
+# Dependencias
+node_modules/
+
+# Carpeta de compilación
+dist/
+
+# Archivos de log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Variables de entorno (¡IMPORTANTE!)
+.env
+.env.*
+!.env.example
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración de algunos editores
+.vscode/
+.idea/

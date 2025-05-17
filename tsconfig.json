@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2020", // O una versión más nueva como ES2021, ES2022. Define a qué versión de JS se compila.
+    "module": "commonjs", // Estándar para módulos en Node.js
+    "outDir": "./dist", // Carpeta donde se guardarán los archivos JavaScript compilados
+    "rootDir": "./src", // Carpeta donde estarán tus archivos TypeScript fuente
+    "strict": true, // Habilita todas las verificaciones estrictas de tipos (¡muy recomendado!)
+    "esModuleInterop": true, // Permite interoperabilidad con módulos CommonJS
+    "skipLibCheck": true, // Omite la verificación de tipos de los archivos de declaración (d.ts)
+    "forceConsistentCasingInFileNames": true // Asegura que las mayúsculas/minúsculas sean consistentes en los nombres de archivo
+    // "resolveJsonModule": true, // Si planeas importar archivos .json directamente en tu código TS
+  }
+  // "include": ["src/**/*"] // Asegúrate de que solo compile lo que está en src
+}
