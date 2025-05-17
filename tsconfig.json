@@ -7,8 +7,10 @@
     "strict": true, // Habilita todas las verificaciones estrictas de tipos (¡muy recomendado!)
     "esModuleInterop": true, // Permite interoperabilidad con módulos CommonJS
     "skipLibCheck": true, // Omite la verificación de tipos de los archivos de declaración (d.ts)
-    "forceConsistentCasingInFileNames": true // Asegura que las mayúsculas/minúsculas sean consistentes en los nombres de archivo
+    "forceConsistentCasingInFileNames": true, // Asegura que las mayúsculas/minúsculas sean consistentes en los nombres de archivo
     // "resolveJsonModule": true, // Si planeas importar archivos .json directamente en tu código TS
+    "experimentalDecorators": true, // <--- ASEGÚRATE DE QUE ESTÉ EN TRUE Y DESCOMENTADO
+    "emitDecoratorMetadata": true
   }
   // "include": ["src/**/*"] // Asegúrate de que solo compile lo que está en src
 }
