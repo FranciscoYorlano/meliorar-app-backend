@@ -8,6 +8,7 @@ import { config } from '../../config/appConfig';
 import { HttpException } from '../../utils/HttpException';
 import * as jwt from 'jsonwebtoken';
 import { successResponse } from '../../utils/response';
+import { Secret, SignOptions } from 'jsonwebtoken';
 
 export class AuthController {
   private userService: UserService;
@@ -73,8 +74,11 @@ export class AuthController {
         email: user.email,
       };
 
+      // ---- SOLUCION PRAGMATICA A TIPADO DE EXPIRESIN ----
+      const currentExpiresIn = config.jwt.expiresIn;
+
       const token = jwt.sign(tokenPayload, config.jwt.secret, {
-        expiresIn: '1d',
+        expiresIn: currentExpiresIn as any,
       });
 
       return successResponse(res, 200, { user, token });

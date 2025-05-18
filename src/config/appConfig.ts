@@ -18,8 +18,6 @@ export const config = {
   },
   jwt: {
     secret: process.env.JWT_SECRET || 'fallback_secret_if_not_in_env',
-    expiresIn: process.env.JWT_EXPIRES_IN
-      ? parseInt(process.env.JWT_EXPIRES_IN)
-      : '1h',
+    expiresIn: process.env.JWT_EXPIRES_IN || '1h',
   },
 };

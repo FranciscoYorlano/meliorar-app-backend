@@ -3,10 +3,16 @@ import AppDataSource from './config/dataSource';
 import { config } from './config/appConfig'; // Importa la configuración para el puerto
 import { HttpException } from './utils/HttpException';
 import { errorResponse } from './utils/response';
-import { errorMessages } from './utils/bug_tracking/bug_tracking.messages';
+import {
+  authMessages,
+  errorMessages,
+  validationMessages,
+} from './utils/bug_tracking/bug_tracking.messages';
+import { MessageAPI } from './utils/bug_tracking/bug_tracking.types';
 
 // Routers
 import router from './routes';
+import { globalErrorHandler } from './utils/globalErrorHandler';
 
 const app: Application = express();
 const PORT: number = config.serverPort; // Usa el puerto desde la config
@@ -20,25 +26,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   return errorResponse(res, errorMessages.NOT_FOUND, null);
 });
 
-// Middleware de Manejo de Errores Global
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  if (err instanceof HttpException) {
-    res.status(err.status).json({
-      status: 'error',
-      statusCode: err.status,
-      message: err.message,
-    });
-  } else {
-    // Loggear el error para depuración interna en caso de errores no esperados
-    console.error(err.stack); // Muestra el stack trace del error en la consola del servidor
-
-    res.status(500).json({
-      status: 'error',
-      statusCode: 500,
-      message: 'Ocurrió un error interno en el servidor.',
-    });
-  }
-});
+app.use(globalErrorHandler);
 
 AppDataSource.initialize()
   .then(() => {
