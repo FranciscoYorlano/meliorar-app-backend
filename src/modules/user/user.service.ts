@@ -1,10 +1,9 @@
-import { Repository } from "typeorm";
-import bcrypt from "bcryptjs";
-import AppDataSource from "../config/dataSource"; // Nuestra fuente de datos
-import { User } from "../entities/user.entity";
-import { CreateUserDto } from "../dtos/create-user.dto";
-import { LoginUserDto } from "../dtos/login-user.dto";
-import { HttpException } from "../utils/HttpException";
+import { Repository } from 'typeorm';
+import bcrypt from 'bcryptjs';
+import AppDataSource from '../../config/dataSource'; // Nuestra fuente de datos
+import { User } from './user.entity';
+import { SignUpUserDto, SignInUserDto } from '../auth/auth.dto';
+import { HttpException } from '../../utils/HttpException';
 
 export class UserService {
   private userRepository: Repository<User>;
@@ -13,7 +12,7 @@ export class UserService {
     this.userRepository = AppDataSource.getRepository(User);
   }
 
-  async createUser(userData: CreateUserDto): Promise<User> {
+  async createUser(userData: SignUpUserDto): Promise<User> {
     const { email, password } = userData;
 
     // 1. Verificar si el usuario ya existe
@@ -24,7 +23,7 @@ export class UserService {
       // Para producción, un mensaje genérico como "Credenciales inválidas" o "Error al registrar" puede ser mejor
       // al intentar loguear o registrar con un email ya existente.
       // Aquí, como es un registro, seremos claros.
-      throw new HttpException(409, "El correo electrónico ya está registrado.");
+      throw new HttpException(409, 'El correo electrónico ya está registrado.');
     }
 
     // 2. Hashear la contraseña
@@ -41,7 +40,7 @@ export class UserService {
       await this.userRepository.save(newUser);
     } catch (error) {
       // Podrías loggear el error 'error' para depuración interna
-      throw new HttpException(500, "Ocurrió un error al crear el usuario.");
+      throw new HttpException(500, 'Ocurrió un error al crear el usuario.');
     }
 
     // No devolvemos el password_hash en la respuesta por seguridad
@@ -51,15 +50,15 @@ export class UserService {
   }
 
   async loginUser(
-    loginData: LoginUserDto
-  ): Promise<Omit<User, "password_hash">> {
+    loginData: SignInUserDto
+  ): Promise<Omit<User, 'password_hash'>> {
     const { email, password } = loginData;
 
     // 1. Buscar al usuario por email
     const user = await this.userRepository.findOneBy({ email });
     if (!user) {
       // Mensaje genérico para no revelar si el email existe o no (mejora de seguridad)
-      throw new HttpException(401, "Credenciales inválidas.");
+      throw new HttpException(401, 'Credenciales inválidas.');
     }
 
     // 2. Comparar la contraseña proporcionada con la hasheada almacenada
@@ -68,7 +67,7 @@ export class UserService {
       user.password_hash
     );
     if (!isPasswordMatching) {
-      throw new HttpException(401, "Credenciales inválidas.");
+      throw new HttpException(401, 'Credenciales inválidas.');
     }
 
     // 3. Si las credenciales son correctas, preparamos los datos del usuario para devolver
@@ -81,6 +80,6 @@ export class UserService {
     // Por lo tanto, modificaremos la promesa de retorno temporalmente.
 
     // Devolvemos el usuario sin el hash para que el controlador genere el token.
-    return userWithoutPassword as Omit<User, "password_hash">; // <--- Modificación temporal
+    return userWithoutPassword as Omit<User, 'password_hash'>; // <--- Modificación temporal
   }
 }

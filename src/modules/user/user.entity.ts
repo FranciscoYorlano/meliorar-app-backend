@@ -5,18 +5,18 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Unique,
-} from "typeorm";
+} from 'typeorm';
 
-@Entity("users") // Define el nombre de la tabla en la base de datos como 'users'
-@Unique(["email"]) // Crea una restricción UNIQUE en la columna 'email'
+@Entity('users') // Define el nombre de la tabla en la base de datos como 'users'
+@Unique(['email']) // Crea una restricción UNIQUE en la columna 'email'
 export class User {
-  @PrimaryGeneratedColumn("uuid") // Define 'id' como llave primaria auto-generada (UUID)
+  @PrimaryGeneratedColumn('uuid') // Define 'id' como llave primaria auto-generada (UUID)
   id!: string;
 
-  @Column({ type: "varchar", length: 255, nullable: false })
+  @Column({ type: 'varchar', length: 255, nullable: false })
   email!: string;
 
-  @Column({ type: "varchar", nullable: false })
+  @Column({ type: 'varchar', nullable: false })
   password_hash!: string; // Almacenaremos la contraseña hasheada
 
   /*
@@ -33,10 +33,10 @@ export class User {
     meli_token_expires_at: Date | null;
     */
 
-  @CreateDateColumn({ type: "timestamp with time zone" }) // Se establece automáticamente al crear
+  @CreateDateColumn({ type: 'timestamp with time zone' }) // Se establece automáticamente al crear
   createdAt!: Date;
 
-  @UpdateDateColumn({ type: "timestamp with time zone" }) // Se actualiza automáticamente al modificar
+  @UpdateDateColumn({ type: 'timestamp with time zone' }) // Se actualiza automáticamente al modificar
   updatedAt!: Date;
 
   // Más adelante podríamos añadir métodos aquí, por ejemplo, para comparar contraseñas,

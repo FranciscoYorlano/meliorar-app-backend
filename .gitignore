@@ -20,5 +20,11 @@ yarn-error.log*
 Thumbs.db
 
 # Archivos de configuración de algunos editores
-.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
 .idea/
+
+# Carpeta de logs de Bug Tracking
+file_store/

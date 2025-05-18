@@ -1,5 +1,5 @@
 // src/types/express/index.d.ts
-import { AuthTokenPayload } from "../../middlewares/auth.middleware";
+import { AuthTokenPayload } from '../../middlewares/auth.middleware';
 
 declare global {
   namespace Express {

@@ -1,9 +1,9 @@
-import "reflect-metadata";
-import { DataSource } from "typeorm";
-import { config } from "./appConfig"; // Importa la configuración centralizada
+import 'reflect-metadata';
+import { DataSource } from 'typeorm';
+import { config } from './appConfig'; // Importa la configuración centralizada
 
 const AppDataSource = new DataSource({
-  type: config.database.type as "postgres", // Type assertion
+  type: config.database.type as 'postgres', // Type assertion
   host: config.database.host,
   port: config.database.port,
   username: config.database.username,

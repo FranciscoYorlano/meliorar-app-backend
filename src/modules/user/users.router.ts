@@ -1,13 +1,11 @@
 // src/routes/user.routes.ts
-import { Router, Request, Response, NextFunction } from "express";
-import { authMiddleware } from "../middlewares/auth.middleware"; // Importa el middleware
+import { Router, Request, Response, NextFunction } from 'express';
 
 const userRouter = Router();
 
 // Ruta GET /api/users/profile (protegida)
 userRouter.get(
-  "/profile",
-  authMiddleware,
+  '/profile',
   (req: Request, res: Response, next: NextFunction) => {
     // Si llegamos aquí, authMiddleware verificó el token y añadió req.user
     try {
@@ -18,7 +16,7 @@ userRouter.get(
         // Esto no debería pasar si authMiddleware funciona bien, pero es una doble verificación
         return next(
           new Error(
-            "Información de usuario no encontrada después de la autenticación."
+            'Información de usuario no encontrada después de la autenticación.'
           )
         );
       }
@@ -26,7 +24,7 @@ userRouter.get(
       // Podrías querer buscar más datos del usuario en la BD usando userProfile.userId
       // pero por ahora, solo devolvemos el payload del token.
       res.status(200).json({
-        message: "Perfil del usuario obtenido exitosamente",
+        message: 'Perfil del usuario obtenido exitosamente',
         data: userProfile,
       });
     } catch (error) {
