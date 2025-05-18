@@ -16,8 +16,8 @@ app.use(express.json());
 // Routers
 app.use('/', router);
 
-app.get('*', (req: Request, res: Response) => {
-  errorResponse(res, errorMessages.NOT_FOUND, null);
+app.use((req: Request, res: Response, next: NextFunction) => {
+  return errorResponse(res, errorMessages.NOT_FOUND, null);
 });
 
 // Middleware de Manejo de Errores Global
@@ -45,7 +45,6 @@ AppDataSource.initialize()
     console.log('¡Conexión a la base de datos establecida exitosamente!');
     app.listen(PORT, () => {
       console.log(`Servidor corriendo en http://localhost:${PORT}`);
-      console.log(config.jwt);
     });
   })
   .catch((error) => {
