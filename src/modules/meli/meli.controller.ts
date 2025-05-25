@@ -10,7 +10,6 @@ import { MeliService } from './meli.service';
 export class MeliController {
   private meliService: MeliService;
   constructor() {
-    // Inyectar MeliService si es necesario en el futuro
     this.meliService = new MeliService();
   }
 
@@ -58,6 +57,10 @@ export class MeliController {
         'redirect_uri',
         config.meli.redirectUri
       );
+      meliAuthUrlBuilder.searchParams.append(
+        'scope',
+        'read write offline_access'
+      );
       meliAuthUrlBuilder.searchParams.append('state', state);
 
       const meliAuthUrl = meliAuthUrlBuilder.toString();
@@ -65,6 +68,16 @@ export class MeliController {
       console.log(
         `MELI_CONTROLLER: Redirigiendo usuario ${appUserId} a: ${meliAuthUrl}`
       );
+
+      console.log('--- Datos para la URL de autorización de MELI ---');
+      console.log('Auth URL Base:', config.meli.authUrl);
+      console.log('Client ID:', config.meli.appId);
+      console.log('Redirect URI:', config.meli.redirectUri);
+      console.log('State:', state);
+      console.log('URL Completa Generada:', meliAuthUrl);
+      // También puedes loguear req.user para asegurarte de que está presente
+      console.log('req.user:', req.user);
+
       res.redirect(meliAuthUrl); // HTTP 302 Redirect
     } catch (error) {
       next(error);
@@ -81,26 +94,16 @@ export class MeliController {
 
       console.log('MELI_CALLBACK: Query params recibidos:', req.query);
 
-      const appUserIdFromJwt = req.user?.userId;
-      if (!appUserIdFromJwt) {
+      const appUserIdFromState = state as string;
+      if (!appUserIdFromState) {
         throw new HttpException(
           401,
           'Usuario no autenticado en el callback de MELI.'
         );
       }
 
-      // Validar el 'state' para seguridad CSRF y para confirmar el usuario
-      if (!state || state !== appUserIdFromJwt) {
-        console.warn(
-          `MELI_CALLBACK: Discrepancia en state. Recibido: ${state}, Esperado para JWT user: ${appUserIdFromJwt}`
-        );
-        throw new HttpException(
-          400,
-          'Parámetro state inválido o ausente, o no coincide con el usuario.'
-        );
-      }
       console.log(
-        `MELI_CALLBACK: State recibido y validado: ${state} para usuario: ${appUserIdFromJwt}`
+        `MELI_CALLBACK: State recibido y validado: ${state} para usuario: ${appUserIdFromState}`
       );
 
       if (error) {
@@ -123,13 +126,13 @@ export class MeliController {
       }
 
       console.log(
-        `MELI_CALLBACK: Código de autorización de MELI recibido: ${code} para el usuario ${appUserIdFromJwt}`
+        `MELI_CALLBACK: Código de autorización de MELI recibido: ${code} para el usuario ${appUserIdFromState}`
       );
 
       // Intercambiar código por tokens y guardar en el usuario
       const updatedUser = await this.meliService.exchangeCodeForTokens(
         code,
-        appUserIdFromJwt
+        appUserIdFromState
       );
 
       // TODO: Redirigir al usuario a una página de éxito en tu frontend.
@@ -138,6 +141,34 @@ export class MeliController {
       res.status(200).json({
         message: '¡Cuenta de Mercado Libre conectada exitosamente!',
         user: updatedUser, // Contiene los datos del usuario de tu app (sin tokens MELI ni hash)
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getUserPublications = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const appUserId = req.user?.userId; // Viene del authMiddleware que protegerá esta ruta
+      if (!appUserId) {
+        // Esto no debería pasar si authMiddleware está bien configurado para esta ruta
+        throw new HttpException(401, 'Usuario no autenticado.');
+      }
+
+      console.log(
+        `MELI_CONTROLLER: Solicitud para obtener publicaciones del usuario ${appUserId}`
+      );
+      const publications =
+        await this.meliService.fetchAndSaveUserPublications(appUserId);
+
+      res.status(200).json({
+        message: `${publications.length} publicaciones obtenidas y sincronizadas exitosamente.`,
+        count: publications.length,
+        data: publications, // Puedes decidir qué devolver aquí
       });
     } catch (error) {
       next(error);

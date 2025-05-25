@@ -7,6 +7,7 @@ import {
   Unique,
   OneToMany,
 } from 'typeorm';
+import { MeliUserPublication } from '../meli-user-publications/meli-user-publications.entity';
 
 @Entity('users') // Define el nombre de la tabla en la base de datos como 'users'
 export class User {
@@ -17,13 +18,13 @@ export class User {
   email!: string;
 
   @Column({ type: 'varchar', nullable: false })
-  password_hash!: string; // Almacenaremos la contraseña hasheada
+  password_hash!: string;
 
   // Meli attributes
   @Column({ type: 'bigint', nullable: true, unique: true })
   meli_user_id!: number | null;
 
-  @Column({ type: 'text', nullable: true }) // 'text' para tokens que pueden ser largos
+  @Column({ type: 'text', nullable: true })
   meli_access_token!: string | null;
 
   @Column({ type: 'text', nullable: true })
@@ -35,9 +36,21 @@ export class User {
   @Column({ type: 'timestamp with time zone', nullable: true })
   meli_last_sync_at!: Date | null;
 
+  // Nuevo campo para la sincronización de publicaciones
+  @Column({ type: 'timestamp with time zone', nullable: true })
+  meli_last_publications_sync_at!: Date | null;
+
   @CreateDateColumn({ type: 'timestamp with time zone' })
   createdAt!: Date;
 
   @UpdateDateColumn({ type: 'timestamp with time zone' })
   updatedAt!: Date;
+
+  // Relación: Un usuario puede tener muchas publicaciones de MELI cacheadas
+  @OneToMany(
+    () => MeliUserPublication,
+    (publication) => publication.user
+    // { cascade: true } // Considera el cascade si al borrar un usuario quieres borrar sus publicaciones cacheadas
+  )
+  meli_user_publications!: MeliUserPublication[];
 }

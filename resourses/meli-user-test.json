@@ -1,0 +1,24 @@
+[
+  {
+    "id": 2449820876,
+    "email": "test_user_941021897@testuser.com",
+    "nickname": "TESTUSER941021897",
+    "site_status": "active",
+    "password": "VhdcMHjn0R"
+  },
+
+  {
+    "message": "¡Cuenta de Mercado Libre conectada exitosamente!",
+    "user": {
+      "id": "f7aff749-4e9e-44b5-a8cd-16c249ea7ba0",
+      "email": "test_user_941021897@testuser.com",
+      "meli_user_id": 2449820876,
+      "meli_token_expires_at": "2025-05-21T03:45:29.321Z",
+      "meli_last_sync_at": "2025-05-20T21:45:29.321Z",
+      "meli_last_publications_sync_at": null,
+      "createdAt": "2025-05-20T21:41:17.681Z",
+      "updatedAt": "2025-05-20T21:45:29.324Z"
+    },
+    "last_token": "TG-682cf7f763e60e0001a87071-2449820876"
+  }
+]
