@@ -6,8 +6,10 @@ import {
   UpdateDateColumn,
   Unique,
   OneToMany,
+  OneToOne,
 } from 'typeorm';
 import { MeliUserPublication } from '../meli-user-publications/meli-user-publications.entity';
+import { UserProfitabilitySettings } from '../profitability-settings/profitability-settings.entity';
 
 @Entity('users') // Define el nombre de la tabla en la base de datos como 'users'
 export class User {
@@ -53,4 +55,9 @@ export class User {
     // { cascade: true } // Considera el cascade si al borrar un usuario quieres borrar sus publicaciones cacheadas
   )
   meli_user_publications!: MeliUserPublication[];
+
+  @OneToOne(() => UserProfitabilitySettings, (settings) => settings.user, {
+    cascade: true,
+  }) // cascade true para que se cree/actualice junto con el usuario si es necesario
+  profitability_settings!: UserProfitabilitySettings | null; // Puede ser null si aún no los configuró
 }
